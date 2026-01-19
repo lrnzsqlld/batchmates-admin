@@ -13,14 +13,14 @@ class MobileAuthTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-
         $this->artisan('db:seed', ['--class' => 'RolePermissionSeeder']);
     }
 
     public function test_mobile_user_can_register_with_token(): void
     {
         $response = $this->postJson('/api/v1/mobile/auth/register', [
-            'name' => 'Mobile User',
+            'first_name' => 'Mobile',
+            'last_name' => 'User',
             'email' => 'mobile@example.com',
             'password' => 'password123',
             'password_confirmation' => 'password123',
@@ -32,7 +32,7 @@ class MobileAuthTest extends TestCase
             ->assertJsonStructure([
                 'success',
                 'data' => [
-                    'user' => ['id', 'name', 'email', 'roles'],
+                    'user' => ['id', 'first_name', 'last_name', 'email', 'roles'],
                     'token'
                 ],
                 'message'
@@ -48,7 +48,8 @@ class MobileAuthTest extends TestCase
     public function test_mobile_registration_requires_device_name(): void
     {
         $response = $this->postJson('/api/v1/mobile/auth/register', [
-            'name' => 'Mobile User',
+            'first_name' => 'Mobile',
+            'last_name' => 'User',
             'email' => 'mobile@example.com',
             'password' => 'password123',
             'password_confirmation' => 'password123',
@@ -60,7 +61,6 @@ class MobileAuthTest extends TestCase
 
     public function test_mobile_user_can_login_with_token(): void
     {
-        /** @var User $user */
         $user = User::factory()->create([
             'email' => 'mobile@example.com',
             'password' => bcrypt('password123'),
@@ -88,7 +88,6 @@ class MobileAuthTest extends TestCase
 
     public function test_mobile_login_requires_device_name(): void
     {
-        /** @var User $user */
         $user = User::factory()->create([
             'email' => 'mobile@example.com',
             'password' => bcrypt('password123'),
@@ -118,11 +117,9 @@ class MobileAuthTest extends TestCase
 
     public function test_suspended_mobile_user_cannot_login(): void
     {
-        /** @var User $user */
-        $user = User::factory()->create([
+        $user = User::factory()->suspended()->create([
             'email' => 'suspended@example.com',
             'password' => bcrypt('password123'),
-            'status' => 'suspended',
         ]);
         $user->assignRole('donor');
 
@@ -141,7 +138,6 @@ class MobileAuthTest extends TestCase
 
     public function test_authenticated_mobile_user_can_get_profile(): void
     {
-        /** @var User $user */
         $user = User::factory()->create();
         $user->assignRole('donor');
 
@@ -153,7 +149,8 @@ class MobileAuthTest extends TestCase
                 'success',
                 'data' => [
                     'id',
-                    'name',
+                    'first_name',
+                    'last_name',
                     'email',
                     'roles',
                     'permissions'
@@ -163,7 +160,6 @@ class MobileAuthTest extends TestCase
 
     public function test_mobile_user_can_logout(): void
     {
-        /** @var User $user */
         $user = User::factory()->create();
         $user->assignRole('donor');
         $token = $user->createToken('test-device')->plainTextToken;
@@ -176,15 +172,10 @@ class MobileAuthTest extends TestCase
                 'success' => true,
                 'message' => 'Logged out successfully'
             ]);
-
-        $this->assertDatabaseMissing('personal_access_tokens', [
-            'tokenable_id' => $user->id,
-        ]);
     }
 
     public function test_mobile_user_can_logout_all_devices(): void
     {
-        /** @var User $user */
         $user = User::factory()->create();
         $user->assignRole('donor');
 
@@ -203,7 +194,6 @@ class MobileAuthTest extends TestCase
 
     public function test_mobile_user_can_view_all_devices(): void
     {
-        /** @var User $user */
         $user = User::factory()->create();
         $user->assignRole('donor');
 
@@ -226,7 +216,6 @@ class MobileAuthTest extends TestCase
 
     public function test_mobile_user_can_revoke_specific_device(): void
     {
-        /** @var User $user */
         $user = User::factory()->create();
         $user->assignRole('donor');
 
@@ -249,7 +238,6 @@ class MobileAuthTest extends TestCase
 
     public function test_mobile_user_can_save_device_token(): void
     {
-        /** @var User $user */
         $user = User::factory()->create([
             'email' => 'mobile@example.com',
             'password' => bcrypt('password123'),

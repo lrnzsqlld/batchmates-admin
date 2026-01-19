@@ -1,19 +1,231 @@
 @import "tailwindcss";
 
+@theme {
+  /* Charcoal Modern Color Scheme */
+  --color-primary: #3b82f6;
+  --color-primary-hover: #2563eb;
+  --color-primary-light: #60a5fa;
+  
+  --color-bg-main: #18181b;
+  --color-bg-card: #27272a;
+  --color-bg-hover: #3f3f46;
+  
+  --color-text-primary: #fafafa;
+  --color-text-secondary: #a1a1aa;
+  --color-text-muted: #71717a;
+  
+  --color-success: #22c55e;
+  --color-warning: #eab308;
+  --color-danger: #dc2626;
+  --color-info: #0ea5e9;
+  
+  --color-border: #3f3f46;
+  --color-sidebar-bg: #09090b;
+  --color-sidebar-active: #2563eb;
+}
+
+@layer base {
+  * {
+    border-color: var(--color-border);
+  }
+
+  body {
+    background-color: var(--color-bg-main);
+    color: var(--color-text-primary);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+}
+
 @layer components {
-  .btn-primary {
-    @apply bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg transition-colors;
-  }
-  
-  .btn-secondary {
-    @apply bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold py-2 px-4 rounded-lg transition-colors;
-  }
-  
+  /* Card Component */
   .card {
-    @apply bg-white rounded-lg shadow-md p-6;
+    background-color: var(--color-bg-card);
+    border: 1px solid var(--color-border);
+    border-radius: 0.5rem;
+    padding: 1.5rem;
+    transition: all 0.2s;
   }
-  
+
+  .card:hover {
+    background-color: var(--color-bg-hover);
+  }
+
+  /* Button Components */
+  .btn {
+    padding: 0.5rem 1rem;
+    border-radius: 0.5rem;
+    font-weight: 500;
+    transition: all 0.2s;
+    outline: none;
+    cursor: pointer;
+    border: none;
+  }
+
+  .btn:focus {
+    ring: 2px;
+    ring-offset: 2px;
+    ring-offset-color: var(--color-bg-main);
+  }
+
+  .btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  .btn-primary {
+    background-color: var(--color-primary);
+    color: white;
+  }
+
+  .btn-primary:hover:not(:disabled) {
+    background-color: var(--color-primary-hover);
+  }
+
+  .btn-primary:focus {
+    ring-color: var(--color-primary);
+  }
+
+  .btn-secondary {
+    background-color: var(--color-bg-card);
+    color: var(--color-text-primary);
+    border: 1px solid var(--color-border);
+  }
+
+  .btn-secondary:hover:not(:disabled) {
+    background-color: var(--color-bg-hover);
+  }
+
+  .btn-secondary:focus {
+    ring-color: var(--color-border);
+  }
+
+  .btn-danger {
+    background-color: var(--color-danger);
+    color: white;
+  }
+
+  .btn-danger:hover:not(:disabled) {
+    background-color: #b91c1c;
+  }
+
+  .btn-success {
+    background-color: var(--color-success);
+    color: white;
+  }
+
+  .btn-success:hover:not(:disabled) {
+    background-color: #16a34a;
+  }
+
+  /* Input Components */
   .input {
-    @apply w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent;
+    width: 100%;
+    padding: 0.5rem 1rem;
+    background-color: var(--color-bg-card);
+    border: 1px solid var(--color-border);
+    border-radius: 0.5rem;
+    color: var(--color-text-primary);
+    transition: all 0.2s;
+    outline: none;
+  }
+
+  .input::placeholder {
+    color: var(--color-text-muted);
+  }
+
+  .input:hover:not(:disabled) {
+    border-color: var(--color-text-muted);
+  }
+
+  .input:focus {
+    ring: 2px;
+    ring-color: var(--color-primary);
+    border-color: transparent;
+  }
+
+  .input:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  /* Label */
+  .label {
+    display: block;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--color-text-primary);
+    margin-bottom: 0.5rem;
+  }
+
+  /* Badge Components */
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.125rem 0.625rem;
+    border-radius: 9999px;
+    font-size: 0.75rem;
+    font-weight: 500;
+  }
+
+  .badge-success {
+    background-color: rgb(34 197 94 / 0.2);
+    color: var(--color-success);
+    border: 1px solid rgb(34 197 94 / 0.3);
+  }
+
+  .badge-warning {
+    background-color: rgb(234 179 8 / 0.2);
+    color: var(--color-warning);
+    border: 1px solid rgb(234 179 8 / 0.3);
+  }
+
+  .badge-danger {
+    background-color: rgb(220 38 38 / 0.2);
+    color: var(--color-danger);
+    border: 1px solid rgb(220 38 38 / 0.3);
+  }
+
+  .badge-info {
+    background-color: rgb(14 165 233 / 0.2);
+    color: var(--color-info);
+    border: 1px solid rgb(14 165 233 / 0.3);
+  }
+
+  /* Table */
+  .table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+
+  .table thead {
+    background-color: var(--color-bg-card);
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .table th {
+    padding: 0.75rem 1.5rem;
+    text-align: left;
+    font-size: 0.75rem;
+    font-weight: 500;
+    color: var(--color-text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .table td {
+    padding: 1rem 1.5rem;
+    white-space: nowrap;
+    font-size: 0.875rem;
+    color: var(--color-text-primary);
+  }
+
+  .table tbody tr {
+    border-bottom: 1px solid var(--color-border);
+    transition: background-color 0.2s;
+  }
+
+  .table tbody tr:hover {
+    background-color: var(--color-bg-hover);
   }
 }

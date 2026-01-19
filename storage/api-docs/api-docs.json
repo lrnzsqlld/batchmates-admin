@@ -1,0 +1,1181 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "Batchmates API",
+        "description": "Multi-tenant alumni donation and campaign management system API",
+        "version": "1.0.0"
+    },
+    "servers": [
+        {
+            "url": "http://localhost:8000",
+            "description": "Local Development Server"
+        }
+    ],
+    "paths": {
+        "/api/v1/campaigns/{campaign}/approve": {
+            "post": {
+                "tags": [
+                    "Campaign Approval"
+                ],
+                "summary": "Approve campaign",
+                "description": "Committee member approves campaign",
+                "operationId": "19be330eccd3ded1517b0cc27391ce93",
+                "parameters": [
+                    {
+                        "name": "campaign",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "notes": {
+                                        "type": "string",
+                                        "example": "Campaign looks good, approved."
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Campaign approved"
+                    },
+                    "403": {
+                        "description": "Not authorized"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/campaigns/{campaign}/reject": {
+            "post": {
+                "tags": [
+                    "Campaign Approval"
+                ],
+                "summary": "Reject campaign",
+                "description": "Committee member rejects campaign with reason",
+                "operationId": "cf4c5fd4199f96a2e2fa35ac4c7a68a4",
+                "parameters": [
+                    {
+                        "name": "campaign",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "reason"
+                                ],
+                                "properties": {
+                                    "reason": {
+                                        "type": "string",
+                                        "example": "Missing required documentation"
+                                    },
+                                    "notes": {
+                                        "type": "string",
+                                        "example": "Please provide budget breakdown"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Campaign rejected"
+                    },
+                    "403": {
+                        "description": "Not authorized"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/campaigns/{campaign}/complete": {
+            "post": {
+                "tags": [
+                    "Campaign Approval"
+                ],
+                "summary": "Mark campaign as completed",
+                "description": "Mark campaign as completed when goal is reached",
+                "operationId": "ded5b30afe7f0ca106e33540f37913c5",
+                "parameters": [
+                    {
+                        "name": "campaign",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Campaign marked as completed"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/campaigns/{campaign}/close": {
+            "post": {
+                "tags": [
+                    "Campaign Approval"
+                ],
+                "summary": "Close campaign early",
+                "description": "Manually close campaign before reaching goal",
+                "operationId": "0ecb3fd63debef5841634c8096b94f5f",
+                "parameters": [
+                    {
+                        "name": "campaign",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "reason"
+                                ],
+                                "properties": {
+                                    "reason": {
+                                        "type": "string",
+                                        "example": "Project requirements changed"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Campaign closed"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/campaignStats/pending-review": {
+            "get": {
+                "tags": [
+                    "Campaign Approval"
+                ],
+                "summary": "Get campaigns pending review",
+                "description": "List all campaigns waiting for committee approval",
+                "operationId": "4e69bec24abe3ccab201e763179c8245",
+                "responses": {
+                    "200": {
+                        "description": "List of pending campaigns",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/campaigns/{campaign}/history": {
+            "get": {
+                "tags": [
+                    "Campaign Approval"
+                ],
+                "summary": "Get campaign approval history",
+                "description": "View all approval actions for a campaign",
+                "operationId": "883f96639660469e788d2497552e5a7e",
+                "parameters": [
+                    {
+                        "name": "campaign",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Approval history"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/campaigns": {
+            "get": {
+                "tags": [
+                    "Campaigns"
+                ],
+                "summary": "List campaigns",
+                "description": "Lists campaigns. Donors see only 'active' campaigns. Committee members see campaigns from their institution. Admins see all.",
+                "operationId": "617d936d65b29bf3912371d823eceba3",
+                "parameters": [
+                    {
+                        "name": "search",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "status",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "institution_id",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Campaign list"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Campaigns"
+                ],
+                "summary": "Create a campaign request",
+                "description": "Creates a new campaign. Status starts as 'pending_review' and requires committee approval to become 'active'.",
+                "operationId": "c9e6f9a10cb181d5df074904ff19a753",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "required": [
+                                    "title",
+                                    "description",
+                                    "goal_amount",
+                                    "campaign_type",
+                                    "institution_id"
+                                ],
+                                "properties": {
+                                    "title": {
+                                        "type": "string",
+                                        "example": "Medical Assistance for Juan"
+                                    },
+                                    "description": {
+                                        "type": "string"
+                                    },
+                                    "goal_amount": {
+                                        "type": "number",
+                                        "example": 100000
+                                    },
+                                    "campaign_type": {
+                                        "type": "string",
+                                        "enum": [
+                                            "general",
+                                            "individual"
+                                        ]
+                                    },
+                                    "institution_id": {
+                                        "description": "Required. Institution this campaign belongs to.",
+                                        "type": "integer"
+                                    },
+                                    "bank_account_id": {
+                                        "description": "Bank account for this campaign",
+                                        "type": "integer",
+                                        "nullable": true
+                                    },
+                                    "beneficiary_id": {
+                                        "description": "For individual campaigns",
+                                        "type": "integer",
+                                        "nullable": true
+                                    },
+                                    "priority": {
+                                        "type": "string",
+                                        "enum": [
+                                            "normal",
+                                            "urgent"
+                                        ]
+                                    },
+                                    "end_date": {
+                                        "type": "string",
+                                        "format": "date"
+                                    },
+                                    "image": {
+                                        "type": "string",
+                                        "format": "binary"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Campaign created successfully and pending review"
+                    },
+                    "422": {
+                        "description": "Validation error"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/campaigns/{id}": {
+            "get": {
+                "tags": [
+                    "Campaigns"
+                ],
+                "summary": "Get campaign details",
+                "operationId": "c9abcff7d8ae0d70a68c8f917cef753d",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Campaign details"
+                    },
+                    "404": {
+                        "description": "Campaign not found"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            },
+            "put": {
+                "tags": [
+                    "Campaigns"
+                ],
+                "summary": "Update campaign",
+                "description": "Creator can update pending campaigns. Committee/admin can update approved campaigns.",
+                "operationId": "b021a1b170e89513ac38b1122d79d671",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "properties": {
+                                    "title": {
+                                        "type": "string"
+                                    },
+                                    "description": {
+                                        "type": "string"
+                                    },
+                                    "goal_amount": {
+                                        "type": "number"
+                                    },
+                                    "image": {
+                                        "type": "string",
+                                        "format": "binary"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Campaign updated"
+                    },
+                    "403": {
+                        "description": "Cannot edit approved campaign"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "Campaigns"
+                ],
+                "summary": "Delete campaign",
+                "description": "Creator can delete pending campaigns. Admin can delete any campaign.",
+                "operationId": "22b8be238435eacfee5a7206cef05d37",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Campaign deleted"
+                    },
+                    "403": {
+                        "description": "Cannot delete approved campaign"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/campaignStats": {
+            "get": {
+                "tags": [
+                    "Campaigns"
+                ],
+                "summary": "Campaign statistics",
+                "description": "Get campaign statistics scoped to user's institution",
+                "operationId": "6701d34b300c49442c02f7121bd3454a",
+                "responses": {
+                    "200": {
+                        "description": "Campaign stats"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/mobile/auth/register": {
+            "post": {
+                "tags": [
+                    "Mobile Auth"
+                ],
+                "summary": "Register a new mobile user",
+                "operationId": "194c6d3d46482952be70aa78128b554c",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "first_name",
+                                    "last_name",
+                                    "email",
+                                    "password",
+                                    "password_confirmation",
+                                    "device_name"
+                                ],
+                                "properties": {
+                                    "first_name": {
+                                        "type": "string",
+                                        "example": "John"
+                                    },
+                                    "last_name": {
+                                        "type": "string",
+                                        "example": "Doe"
+                                    },
+                                    "email": {
+                                        "type": "string",
+                                        "format": "email",
+                                        "example": "john@example.com"
+                                    },
+                                    "password": {
+                                        "type": "string",
+                                        "format": "password",
+                                        "example": "password123"
+                                    },
+                                    "password_confirmation": {
+                                        "type": "string",
+                                        "format": "password",
+                                        "example": "password123"
+                                    },
+                                    "device_name": {
+                                        "type": "string",
+                                        "example": "iPhone 15"
+                                    },
+                                    "device_token": {
+                                        "type": "string",
+                                        "example": "fcm_token_xyz",
+                                        "nullable": true
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "User registered successfully"
+                    },
+                    "422": {
+                        "description": "Validation error"
+                    }
+                }
+            }
+        },
+        "/api/v1/mobile/auth/login": {
+            "post": {
+                "tags": [
+                    "Mobile Auth"
+                ],
+                "summary": "Login via mobile and get a Bearer token",
+                "operationId": "1c49dec15ed3ad7b635fdd1b2fae2d66",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "email",
+                                    "password",
+                                    "device_name"
+                                ],
+                                "properties": {
+                                    "email": {
+                                        "type": "string",
+                                        "format": "email",
+                                        "example": "john@example.com"
+                                    },
+                                    "password": {
+                                        "type": "string",
+                                        "format": "password",
+                                        "example": "password123"
+                                    },
+                                    "device_name": {
+                                        "type": "string",
+                                        "example": "Google Pixel 8"
+                                    },
+                                    "device_token": {
+                                        "type": "string",
+                                        "nullable": true
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Login successful"
+                    },
+                    "401": {
+                        "description": "Invalid credentials"
+                    },
+                    "403": {
+                        "description": "Account suspended"
+                    }
+                }
+            }
+        },
+        "/api/v1/mobile/auth/me": {
+            "get": {
+                "tags": [
+                    "Mobile Auth"
+                ],
+                "summary": "Get authenticated user profile",
+                "operationId": "410d4dadaec596fe963dd2a233459e03",
+                "responses": {
+                    "200": {
+                        "description": "User details returned"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/mobile/auth/logout": {
+            "post": {
+                "tags": [
+                    "Mobile Auth"
+                ],
+                "summary": "Logout current device",
+                "operationId": "c015f0ccc4bf506cc9653f52f53e9a38",
+                "responses": {
+                    "200": {
+                        "description": "Logged out"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/mobile/auth/devices": {
+            "get": {
+                "tags": [
+                    "Mobile Auth"
+                ],
+                "summary": "List all active device tokens",
+                "operationId": "d933f05b7d8e942598e1821f6c47ca59",
+                "responses": {
+                    "200": {
+                        "description": "List of devices"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/mobile/auth/devices/{tokenId}": {
+            "delete": {
+                "tags": [
+                    "Mobile Auth"
+                ],
+                "summary": "Revoke a specific device token",
+                "operationId": "471355b9591f7c77491d114aa346b094",
+                "parameters": [
+                    {
+                        "name": "tokenId",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Device revoked"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/auth/forgot-password": {
+            "post": {
+                "tags": [
+                    "Password Reset"
+                ],
+                "summary": "Request password reset",
+                "description": "Sends password reset link to user's email",
+                "operationId": "5d42453809bd1c843428529b6b1fdc4a",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "email"
+                                ],
+                                "properties": {
+                                    "email": {
+                                        "type": "string",
+                                        "format": "email",
+                                        "example": "user@example.com"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Reset link sent",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Password reset link sent to your email"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation error"
+                    }
+                }
+            }
+        },
+        "/api/v1/auth/reset-password": {
+            "post": {
+                "tags": [
+                    "Password Reset"
+                ],
+                "summary": "Reset password",
+                "description": "Resets password using token from email",
+                "operationId": "388c6653c643d7198d7f5a3e229fd7fa",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "email",
+                                    "token",
+                                    "password",
+                                    "password_confirmation"
+                                ],
+                                "properties": {
+                                    "email": {
+                                        "type": "string",
+                                        "format": "email",
+                                        "example": "user@example.com"
+                                    },
+                                    "token": {
+                                        "type": "string",
+                                        "example": "abc123..."
+                                    },
+                                    "password": {
+                                        "type": "string",
+                                        "format": "password",
+                                        "example": "newpassword123"
+                                    },
+                                    "password_confirmation": {
+                                        "type": "string",
+                                        "format": "password",
+                                        "example": "newpassword123"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Password reset successful",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Password has been reset successfully"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Invalid token or validation error"
+                    }
+                }
+            }
+        },
+        "/api/v1/auth/verify-reset-token": {
+            "post": {
+                "tags": [
+                    "Password Reset"
+                ],
+                "summary": "Verify reset token",
+                "description": "Checks if password reset token is valid (optional endpoint for better UX)",
+                "operationId": "d258b3598f6be9f29f5d9475f346131a",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "email",
+                                    "token"
+                                ],
+                                "properties": {
+                                    "email": {
+                                        "type": "string",
+                                        "format": "email"
+                                    },
+                                    "token": {
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Token is valid"
+                    },
+                    "422": {
+                        "description": "Token is invalid or expired"
+                    }
+                }
+            }
+        },
+        "/api/v1/web/auth/register": {
+            "post": {
+                "tags": [
+                    "Web Authentication"
+                ],
+                "summary": "Register a new user (Web)",
+                "operationId": "7fd5f8dcb9eb7335b7bf3a0ec3299932",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "first_name",
+                                    "last_name",
+                                    "email",
+                                    "password",
+                                    "password_confirmation"
+                                ],
+                                "properties": {
+                                    "first_name": {
+                                        "type": "string",
+                                        "example": "Juan"
+                                    },
+                                    "last_name": {
+                                        "type": "string",
+                                        "example": "Dela Cruz"
+                                    },
+                                    "email": {
+                                        "type": "string",
+                                        "format": "email",
+                                        "example": "test@batchmates.com"
+                                    },
+                                    "password": {
+                                        "type": "string",
+                                        "format": "password",
+                                        "example": "password123"
+                                    },
+                                    "password_confirmation": {
+                                        "type": "string",
+                                        "format": "password",
+                                        "example": "password123"
+                                    },
+                                    "role": {
+                                        "type": "string",
+                                        "enum": [
+                                            "donor",
+                                            "institution_admin"
+                                        ],
+                                        "example": "donor"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "User registered successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "data": {
+                                            "properties": {
+                                                "id": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "first_name": {
+                                                    "type": "string",
+                                                    "example": "Juan"
+                                                },
+                                                "last_name": {
+                                                    "type": "string",
+                                                    "example": "Dela Cruz"
+                                                },
+                                                "email": {
+                                                    "type": "string",
+                                                    "example": "juan@example.com"
+                                                }
+                                            },
+                                            "type": "object"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "User registered successfully"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation error"
+                    }
+                }
+            }
+        },
+        "/api/v1/web/auth/login": {
+            "post": {
+                "tags": [
+                    "Web Authentication"
+                ],
+                "summary": "Login user (Web)",
+                "operationId": "f62399c0732208d125443138a8e12607",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "email",
+                                    "password"
+                                ],
+                                "properties": {
+                                    "email": {
+                                        "type": "string",
+                                        "format": "email",
+                                        "example": "admin@batchmates.com"
+                                    },
+                                    "password": {
+                                        "type": "string",
+                                        "format": "password",
+                                        "example": "password"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Login successful",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "data": {
+                                            "properties": {
+                                                "id": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "email": {
+                                                    "type": "string",
+                                                    "example": "admin@batchmates.com"
+                                                }
+                                            },
+                                            "type": "object"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Logged in successfully"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Invalid credentials"
+                    },
+                    "403": {
+                        "description": "Account suspended"
+                    }
+                }
+            }
+        },
+        "/api/v1/web/auth/me": {
+            "get": {
+                "tags": [
+                    "Web Authentication"
+                ],
+                "summary": "Get authenticated user",
+                "operationId": "3a5c0cdd72f6e2e2dc9fed8762bedba2",
+                "responses": {
+                    "200": {
+                        "description": "User profile retrieved",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "data": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/web/auth/logout": {
+            "post": {
+                "tags": [
+                    "Web Authentication"
+                ],
+                "summary": "Logout user",
+                "operationId": "f2416f39a87c528bb4f2481cb51dcecc",
+                "responses": {
+                    "200": {
+                        "description": "Logout successful"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        }
+    },
+    "components": {
+        "securitySchemes": {
+            "BearerToken": {
+                "type": "http",
+                "description": "Use this for MOBILE testing (Token-based)",
+                "bearerFormat": "JWT",
+                "scheme": "bearer"
+            },
+            "CookieCsrfToken": {
+                "type": "apiKey",
+                "description": "Use this for WEB testing (Session-based). Value must be the XSRF-TOKEN cookie value.",
+                "name": "X-XSRF-TOKEN",
+                "in": "header"
+            }
+        }
+    },
+    "tags": [
+        {
+            "name": "Campaign Approval",
+            "description": "Campaign approval workflow for committee members"
+        },
+        {
+            "name": "Campaigns",
+            "description": "Campaign management endpoints"
+        },
+        {
+            "name": "Mobile Auth",
+            "description": "Mobile-specific authentication using Bearer Tokens"
+        },
+        {
+            "name": "Password Reset",
+            "description": "Password recovery endpoints"
+        },
+        {
+            "name": "Web Authentication",
+            "description": "Web Authentication"
+        }
+    ]
+}

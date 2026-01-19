@@ -1,77 +1,69 @@
-import { Outlet, Link, Navigate } from 'react-router-dom'
+import { Outlet, useLocation } from 'react-router-dom'
+import { useState } from 'react'
+import Sidebar from '@/components/layout/Sidebar'
+import Header from '@/components/layout/Header'
 import { useAuth } from '@/contexts/AuthContext'
-import { LayoutDashboard, Users, Building2, GraduationCap, Heart, LogOut } from 'lucide-react'
+import { AlertCircle } from 'lucide-react'
+
+const pageTitles: Record<string, string> = {
+  '/admin': 'Dashboard',
+  '/admin/campaigns': 'Campaigns',
+  '/admin/donations': 'Donations',
+  '/admin/users': 'Users',
+  '/admin/settings': 'Settings',
+}
 
 export default function AdminLayout() {
-    const { user, logout, loading } = useAuth()
+  const location = useLocation()
+  const { hasRole, logout } = useAuth()
+  const [sidebarOpen, setSidebarOpen] = useState(false)
 
-    if (loading) {
-        return (
-            <div className="flex items-center justify-center min-h-screen">
-                <div className="text-lg">Loading...</div>
-            </div>
-        )
-    }
+  const pageTitle = pageTitles[location.pathname] || 'Admin Panel'
 
-    if (!user || !user.roles.some((role: any) => role.name === 'admin')) {
-        return <Navigate to="/login" replace />
-    }
-
-    const navigation = [
-        { name: 'Dashboard', href: '/admin', icon: LayoutDashboard },
-        { name: 'Users', href: '/admin/users', icon: Users },
-        { name: 'Institutions', href: '/admin/institutions', icon: Building2 },
-        { name: 'Students', href: '/admin/students', icon: GraduationCap },
-        { name: 'Donations', href: '/admin/donations', icon: Heart },
-    ]
-
+  if (!hasRole('system_admin')) {
     return (
-        <div className="min-h-screen bg-gray-100">
-            <div className="fixed inset-y-0 left-0 w-64 bg-white shadow-lg">
-                <div className="flex flex-col h-full">
-                    <div className="flex items-center h-16 px-6 border-b">
-                        <h1 className="text-xl font-bold text-blue-600">Batchmates Admin</h1>
-                    </div>
-
-                    <nav className="flex-1 px-4 py-6 space-y-1 overflow-y-auto">
-                        {navigation.map((item) => {
-                            const Icon = item.icon
-                            return (
-                                <Link
-                                    key={item.name}
-                                    to={item.href}
-                                    className="flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-blue-50 hover:text-blue-700 transition"
-                                >
-                                    <Icon className="h-5 w-5 mr-3" />
-                                    {item.name}
-                                </Link>
-                            )
-                        })}
-                    </nav>
-
-                    <div className="border-t p-4">
-                        <div className="flex items-center justify-between">
-                            <div>
-                                <p className="text-sm font-medium text-gray-900">{user.name}</p>
-                                <p className="text-xs text-gray-500">{user.email}</p>
-                            </div>
-                            <button
-                                onClick={logout}
-                                className="p-2 text-gray-600 hover:text-red-600 transition"
-                                title="Logout"
-                            >
-                                <LogOut className="h-5 w-5" />
-                            </button>
-                        </div>
-                    </div>
-                </div>
+      <div className="min-h-screen flex items-center justify-center p-4 bg-bg-main">
+        <div className="max-w-md w-full">
+          <div className="bg-danger/5 border border-danger/20 rounded-2xl p-8 text-center">
+            <div className="w-16 h-16 rounded-full bg-danger/10 flex items-center justify-center mx-auto mb-4">
+              <AlertCircle className="h-8 w-8 text-danger" />
             </div>
-
-            <div className="pl-64">
-                <main className="p-8">
-                    <Outlet />
-                </main>
-            </div>
+            <h2 className="text-2xl font-bold text-text-primary mb-2">Access Denied</h2>
+            <p className="text-text-secondary mb-6">
+              You don't have the required permissions to access the admin panel.
+            </p>
+            <button onClick={logout} className="btn-secondary">
+              Logout
+            </button>
+          </div>
         </div>
+      </div>
     )
+  }
+
+  return (
+    <div className="min-h-screen bg-bg-main">
+      {sidebarOpen && (
+        <div
+          className="fixed inset-0 bg-black/60 backdrop-blur-sm z-40 lg:hidden"
+          onClick={() => setSidebarOpen(false)}
+        />
+      )}
+
+      <div className={`
+        fixed inset-y-0 left-0 z-50 transform transition-transform duration-300 ease-in-out lg:translate-x-0
+        ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}
+      `}>
+        <Sidebar />
+      </div>
+
+      <div className="lg:pl-64">
+        <Header title={pageTitle} onMenuClick={() => setSidebarOpen(true)} />
+
+        <main className="p-6 lg:p-8">
+          <Outlet />
+        </main>
+      </div>
+    </div>
+  )
 }

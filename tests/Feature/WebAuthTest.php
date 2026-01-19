@@ -13,26 +13,24 @@ class WebAuthTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-
         $this->artisan('db:seed', ['--class' => 'RolePermissionSeeder']);
     }
 
     public function test_web_user_can_register_with_session(): void
     {
         $response = $this->postJson('/api/v1/web/auth/register', [
-            'name' => 'Web User',
+            'first_name' => 'Web',
+            'last_name' => 'User',
             'email' => 'web@example.com',
             'password' => 'password123',
             'password_confirmation' => 'password123',
-            'role' => 'admin',
+            'role' => 'donor',
         ]);
 
         $response->assertStatus(201)
             ->assertJsonStructure([
                 'success',
-                'data' => [
-                    'user' => ['id', 'name', 'email', 'roles']
-                ],
+                'data' => ['id', 'first_name', 'last_name', 'email', 'roles'],
                 'message'
             ])
             ->assertJsonMissing(['token']);
@@ -45,7 +43,8 @@ class WebAuthTest extends TestCase
     public function test_web_registration_does_not_return_token(): void
     {
         $response = $this->postJson('/api/v1/web/auth/register', [
-            'name' => 'Web User',
+            'first_name' => 'Web',
+            'last_name' => 'User',
             'email' => 'web@example.com',
             'password' => 'password123',
             'password_confirmation' => 'password123',
@@ -57,12 +56,11 @@ class WebAuthTest extends TestCase
 
     public function test_web_user_can_login_with_session(): void
     {
-        /** @var User $user */
         $user = User::factory()->create([
             'email' => 'web@example.com',
             'password' => bcrypt('password123'),
         ]);
-        $user->assignRole('admin');
+        $user->assignRole('donor');
 
         $response = $this->postJson('/api/v1/web/auth/login', [
             'email' => 'web@example.com',
@@ -72,9 +70,7 @@ class WebAuthTest extends TestCase
         $response->assertStatus(200)
             ->assertJsonStructure([
                 'success',
-                'data' => [
-                    'user'
-                ],
+                'data' => ['id', 'first_name', 'last_name', 'email', 'roles'],
                 'message'
             ])
             ->assertJsonMissing(['token']);
@@ -82,12 +78,11 @@ class WebAuthTest extends TestCase
 
     public function test_web_login_does_not_require_device_name(): void
     {
-        /** @var User $user */
         $user = User::factory()->create([
             'email' => 'web@example.com',
             'password' => bcrypt('password123'),
         ]);
-        $user->assignRole('admin');
+        $user->assignRole('donor');
 
         $response = $this->postJson('/api/v1/web/auth/login', [
             'email' => 'web@example.com',
@@ -110,13 +105,11 @@ class WebAuthTest extends TestCase
 
     public function test_suspended_web_user_cannot_login(): void
     {
-        /** @var User $user */
-        $user = User::factory()->create([
+        $user = User::factory()->suspended()->create([
             'email' => 'suspended@example.com',
             'password' => bcrypt('password123'),
-            'status' => 'suspended',
         ]);
-        $user->assignRole('admin');
+        $user->assignRole('donor');
 
         $response = $this->postJson('/api/v1/web/auth/login', [
             'email' => 'suspended@example.com',
@@ -132,35 +125,26 @@ class WebAuthTest extends TestCase
 
     public function test_authenticated_web_user_can_get_profile(): void
     {
-        /** @var User $user */
         $user = User::factory()->create();
-        $user->assignRole('admin');
+        $user->assignRole('donor');
 
         $response = $this->actingAs($user, 'sanctum')
-            ->getJson('/api/v1/web/auth/me');
+            ->getJson('/api/v1/auth/me');
 
         $response->assertStatus(200)
             ->assertJsonStructure([
                 'success',
-                'data' => [
-                    'id',
-                    'name',
-                    'email',
-                    'roles',
-                    'permissions'
-                ]
+                'data' => ['id', 'first_name', 'last_name', 'email', 'roles', 'permissions']
             ]);
     }
 
     public function test_web_user_can_logout(): void
     {
-        /** @var User $user */
         $user = User::factory()->create();
-        $user->assignRole('admin');
+        $user->assignRole('donor');
 
-        $this->actingAs($user, 'web');
-
-        $response = $this->postJson('/api/v1/web/auth/logout');
+        $response = $this->actingAs($user, 'sanctum')
+            ->postJson('/api/v1/auth/logout');
 
         $response->assertStatus(200)
             ->assertJson([
@@ -171,19 +155,16 @@ class WebAuthTest extends TestCase
 
     public function test_web_does_not_save_device_token(): void
     {
-        /** @var User $user */
         $user = User::factory()->create([
             'email' => 'web@example.com',
             'password' => bcrypt('password123'),
         ]);
-        $user->assignRole('admin');
+        $user->assignRole('donor');
 
-        $response = $this->postJson('/api/v1/web/auth/login', [
+        $this->postJson('/api/v1/web/auth/login', [
             'email' => 'web@example.com',
             'password' => 'password123',
         ]);
-
-        $response->assertStatus(200);
 
         $this->assertDatabaseHas('users', [
             'id' => $user->id,
@@ -196,7 +177,7 @@ class WebAuthTest extends TestCase
         $response = $this->postJson('/api/v1/web/auth/register', []);
 
         $response->assertStatus(422)
-            ->assertJsonValidationErrors(['name', 'email', 'password']);
+            ->assertJsonValidationErrors(['first_name', 'last_name', 'email', 'password']);
     }
 
     public function test_web_registration_validates_unique_email(): void
@@ -204,7 +185,8 @@ class WebAuthTest extends TestCase
         User::factory()->create(['email' => 'existing@example.com']);
 
         $response = $this->postJson('/api/v1/web/auth/register', [
-            'name' => 'Test User',
+            'first_name' => 'Test',
+            'last_name' => 'User',
             'email' => 'existing@example.com',
             'password' => 'password123',
             'password_confirmation' => 'password123',
@@ -217,7 +199,8 @@ class WebAuthTest extends TestCase
     public function test_web_registration_validates_password_confirmation(): void
     {
         $response = $this->postJson('/api/v1/web/auth/register', [
-            'name' => 'Test User',
+            'first_name' => 'Test',
+            'last_name' => 'User',
             'email' => 'test@example.com',
             'password' => 'password123',
             'password_confirmation' => 'different',

@@ -1,6 +1,7 @@
 import { useState } from 'react'
-import { useNavigate, Link } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import { useAuth } from '@/contexts/AuthContext'
+import { Mail, Lock, Shield } from 'lucide-react'
 
 export default function Login() {
     const [email, setEmail] = useState('')
@@ -17,83 +18,101 @@ export default function Login() {
 
         try {
             await login(email, password)
-            navigate('/admin')
+            navigate('/admin', { replace: true })
         } catch (err: any) {
-            setError(err.response?.data?.message || 'Login failed. Please check your credentials.')
+            setError(err.response?.data?.message || 'Invalid credentials')
         } finally {
             setLoading(false)
         }
     }
 
     return (
-        <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-blue-100">
-            <div className="max-w-md w-full mx-4">
-                <div className="card">
-                    <div className="text-center mb-8">
-                        <h1 className="text-3xl font-bold text-gray-900">Batchmates Admin</h1>
-                        <p className="text-gray-600 mt-2">Sign in to your account</p>
-                    </div>
+        <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 flex items-center justify-center p-4">
+            {/* Subtle grid pattern */}
+            <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGRlZnM+PHBhdHRlcm4gaWQ9ImdyaWQiIHdpZHRoPSI2MCIgaGVpZ2h0PSI2MCIgcGF0dGVyblVuaXRzPSJ1c2VyU3BhY2VPblVzZSI+PHBhdGggZD0iTSAxMCAwIEwgMCAwIDAgMTAiIGZpbGw9Im5vbmUiIHN0cm9rZT0icmdiYSgyNTUsMjU1LDI1NSwwLjAzKSIgc3Ryb2tlLXdpZHRoPSIxIi8+PC9wYXR0ZXJuPjwvZGVmcz48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSJ1cmwoI2dyaWQpIi8+PC9zdmc+')] opacity-40"></div>
 
+            <div className="w-full max-w-md relative z-10">
+                {/* Logo & Title */}
+                <div className="text-center mb-8">
+                    <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-primary/10 border border-primary/20 mb-4">
+                        <Shield className="h-8 w-8 text-primary" />
+                    </div>
+                    <h1 className="text-3xl font-bold text-white mb-2">Batchmates Admin</h1>
+                    <p className="text-slate-400">Sign in to access the admin panel</p>
+                </div>
+
+                {/* Login Card */}
+                <div className="bg-slate-800/50 backdrop-blur-xl border border-slate-700/50 rounded-2xl shadow-2xl p-8">
                     {error && (
-                        <div className="mb-4 p-4 bg-red-50 border border-red-200 text-red-700 rounded-lg text-sm">
+                        <div className="mb-6 p-4 bg-red-500/10 border border-red-500/20 text-red-400 rounded-xl text-sm">
                             {error}
                         </div>
                     )}
 
-                    <form onSubmit={handleSubmit} className="space-y-6">
+                    <form onSubmit={handleSubmit} className="space-y-5">
                         <div>
-                            <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
+                            <label className="block text-sm font-medium text-slate-300 mb-2">
                                 Email Address
                             </label>
-                            <input
-                                id="email"
-                                type="email"
-                                value={email}
-                                onChange={(e) => setEmail(e.target.value)}
-                                className="input"
-                                placeholder="you@example.com"
-                                required
-                                autoComplete="email"
-                            />
+                            <div className="relative">
+                                <Mail className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-500" />
+                                <input
+                                    type="email"
+                                    value={email}
+                                    onChange={(e) => setEmail(e.target.value)}
+                                    className="w-full h-12 pl-12 pr-4 bg-slate-900/50 border border-slate-700 rounded-xl text-white placeholder:text-slate-500 focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all"
+                                    placeholder="admin@example.com"
+                                    required
+                                />
+                            </div>
                         </div>
 
                         <div>
-                            <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-2">
+                            <label className="block text-sm font-medium text-slate-300 mb-2">
                                 Password
                             </label>
-                            <input
-                                id="password"
-                                type="password"
-                                value={password}
-                                onChange={(e) => setPassword(e.target.value)}
-                                className="input"
-                                placeholder="Enter your password"
-                                required
-                                autoComplete="current-password"
-                            />
+                            <div className="relative">
+                                <Lock className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-500" />
+                                <input
+                                    type="password"
+                                    value={password}
+                                    onChange={(e) => setPassword(e.target.value)}
+                                    className="w-full h-12 pl-12 pr-4 bg-slate-900/50 border border-slate-700 rounded-xl text-white placeholder:text-slate-500 focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all"
+                                    placeholder="••••••••"
+                                    required
+                                />
+                            </div>
                         </div>
 
                         <button
                             type="submit"
                             disabled={loading}
-                            className="w-full btn-primary disabled:opacity-50 disabled:cursor-not-allowed"
+                            className="w-full h-12 bg-primary hover:bg-primary-hover text-white font-medium rounded-xl transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                         >
-                            {loading ? 'Signing in...' : 'Sign In'}
+                            {loading ? (
+                                <>
+                                    <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                                    <span>Signing in...</span>
+                                </>
+                            ) : (
+                                <span>Sign In</span>
+                            )}
                         </button>
                     </form>
 
-                    <div className="mt-6 text-center">
-                        <p className="text-sm text-gray-600">
-                            Don't have an account?{' '}
-                            <Link to="/register" className="text-blue-600 hover:text-blue-700 font-medium">
-                                Register here
-                            </Link>
+                    {/* Demo Credentials */}
+                    <div className="mt-6 p-4 bg-slate-900/50 border border-slate-700/50 rounded-xl">
+                        <p className="text-xs text-slate-400 text-center">
+                            <span className="font-semibold text-slate-300">Demo Credentials:</span>
+                            <br />
+                            admin@batchmates.com / password
                         </p>
                     </div>
                 </div>
 
-                <p className="text-center text-sm text-gray-600 mt-4">
-                    For testing: admin@example.com / password
+                {/* Footer */}
+                <p className="text-center text-slate-500 text-sm mt-6">
+                    © 2026 Batchmates. All rights reserved.
                 </p>
             </div>
         </div>

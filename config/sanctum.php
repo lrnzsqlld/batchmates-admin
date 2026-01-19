@@ -10,17 +10,20 @@ return [
     |--------------------------------------------------------------------------
     |
     | Requests from the following domains / hosts will receive stateful API
-    | authentication cookies. Typically, these should include your local
-    | and production domains which access your API via a frontend SPA.
+    | authentication cookies. These should be your SPA domains.
+    |
+    | For local development, include both localhost and 127.0.0.1 with ports.
     |
     */
 
-    'stateful' => explode(',', env('SANCTUM_STATEFUL_DOMAINS', sprintf(
-        '%s%s',
-        'localhost,localhost:3000,127.0.0.1,127.0.0.1:8000,::1',
-        Sanctum::currentApplicationUrlWithPort(),
-        // Sanctum::currentRequestHost(),
-    ))),
+    'stateful' => explode(',', env(
+        'SANCTUM_STATEFUL_DOMAINS',
+        sprintf(
+            '%s%s',
+            'localhost,localhost:5173,localhost:8000,127.0.0.1,127.0.0.1:5173,127.0.0.1:8000',
+            Sanctum::currentApplicationUrlWithPort()
+        )
+    )),
 
     /*
     |--------------------------------------------------------------------------
@@ -42,12 +45,12 @@ return [
     |--------------------------------------------------------------------------
     |
     | This value controls the number of minutes until an issued token will be
-    | considered expired. This will override any values set in the token's
-    | "expires_at" attribute, but first-party sessions are not affected.
+    | considered expired. Use null for tokens that never expire, or set a
+    | reasonable value for mobile apps (e.g., 7 days = 60 * 24 * 7).
     |
     */
 
-    'expiration' => 60 * 24 * 7, // Token expires in 7 days (null = never expires)
+    'expiration' => null,
 
     /*
     |--------------------------------------------------------------------------
@@ -57,8 +60,6 @@ return [
     | Sanctum can prefix new tokens in order to take advantage of numerous
     | security scanning initiatives maintained by open source platforms
     | that notify developers if they commit tokens into repositories.
-    |
-    | See: https://docs.github.com/en/code-security/secret-scanning/about-secret-scanning
     |
     */
 

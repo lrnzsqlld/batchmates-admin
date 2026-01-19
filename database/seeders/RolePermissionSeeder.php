@@ -10,70 +10,88 @@ class RolePermissionSeeder extends Seeder
 {
     public function run(): void
     {
-        // Reset cached roles and permissions
         app()[\Spatie\Permission\PermissionRegistrar::class]->forgetCachedPermissions();
 
-        // Create permissions
         $permissions = [
-            // User management
+            'manage institutions',
+            'manage system settings',
+            'manage alumni committees',
+            'assign committee members',
+            'manage bank accounts',
             'view users',
             'create users',
             'edit users',
             'delete users',
             'suspend users',
-
-            // Institution management
-            'view institutions',
-            'create institutions',
-            'edit institutions',
-            'delete institutions',
-            'verify institutions',
-
-            // Student management
-            'view students',
-            'create students',
-            'edit students',
-            'delete students',
-            'approve students',
-
-            // Donation management
+            'view campaigns',
+            'create campaigns',
+            'edit campaigns',
+            'delete campaigns',
+            'approve campaigns',
+            'reject campaigns',
             'view donations',
             'create donations',
+            'approve donations',
             'refund donations',
-            'view all donations',
+            'view withdrawals',
+            'create withdrawals',
+            'approve withdrawals',
+            'release withdrawals',
+            'view audit logs',
+            'view profile',
+            'edit profile',
         ];
 
         foreach ($permissions as $permission) {
             Permission::create(['name' => $permission]);
         }
 
-        // Create roles and assign permissions
+        $systemAdmin = Role::create(['name' => 'system_admin']);
+        $systemAdmin->givePermissionTo(Permission::all());
 
-        // Admin - has all permissions
-        $admin = Role::create(['name' => 'admin']);
-        $admin->givePermissionTo(Permission::all());
+        $institutionAdmin = Role::create(['name' => 'institution_admin']);
+        $institutionAdmin->givePermissionTo([
+            'manage alumni committees',
+            'assign committee members',
+            'manage bank accounts',
+            'view users',
+            'create users',
+            'edit users',
+            'suspend users',
+            'view campaigns',
+            'create campaigns',
+            'edit campaigns',
+            'delete campaigns',
+            'approve campaigns',
+            'reject campaigns',
+            'view donations',
+            'view withdrawals',
+            'create withdrawals',
+            'view audit logs',
+            'view profile',
+            'edit profile',
+        ]);
 
-        // Donor - can only donate and view
+        $committeeMember = Role::create(['name' => 'committee_member']);
+        $committeeMember->givePermissionTo([
+            'view campaigns',
+            'approve campaigns',
+            'reject campaigns',
+            'view donations',
+            'view withdrawals',
+            'create withdrawals',
+            'approve withdrawals',
+            'view profile',
+            'edit profile',
+        ]);
+
         $donor = Role::create(['name' => 'donor']);
         $donor->givePermissionTo([
-            'view institutions',
-            'view students',
+            'view campaigns',
+            'create campaigns',
             'create donations',
-        ]);
-
-        // Institution - can manage their students
-        $institution = Role::create(['name' => 'institution']);
-        $institution->givePermissionTo([
-            'view students',
-            'create students',
-            'edit students',
-            'view donations',
-        ]);
-
-        // Student - can view their profile
-        $student = Role::create(['name' => 'student']);
-        $student->givePermissionTo([
-            'view donations',
+            'view profile',
+            'edit profile',
         ]);
     }
 }

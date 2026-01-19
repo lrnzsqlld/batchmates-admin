@@ -13,6 +13,21 @@ return [
     | a conventional file to locate the various service credentials.
     |
     */
+    'maya' => [
+        'public_key' => env('MAYA_PUBLIC_KEY', ''),
+        'secret_key' => env('MAYA_SECRET_KEY', ''),
+        'environment' => env('MAYA_ENVIRONMENT', 'sandbox'),
+    ],
+
+    'maya_sandbox' => [
+        'public_key' => 'pk-Z0OSzLvIcOI2UIvDhdTGVVfRSSeiGStnceqwUE7n0Ah',
+        'secret_key' => 'sk-X8qolYjy62kIzEbr0QRK1h4b4KDVHaNrVPWYy0YpPW4',
+    ],
+
+    'app' => [
+        'frontend_url' => env('FRONTEND_URL', 'http://localhost:3000'),
+    ],
+
 
     'postmark' => [
         'key' => env('POSTMARK_API_KEY'),
