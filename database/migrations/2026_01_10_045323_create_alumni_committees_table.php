@@ -16,8 +16,6 @@ return new class extends Migration
             $table->date('start_date');
             $table->date('end_date')->nullable();
             $table->enum('status', ['active', 'inactive', 'dissolved'])->default('active');
-            $table->integer('approval_threshold')->default(100)->comment('Percentage: 51 = majority, 100 = unanimous');
-            $table->enum('approval_type', ['unanimous', 'majority'])->default('unanimous');
             $table->timestamps();
             $table->softDeletes();
         });

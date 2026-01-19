@@ -141,7 +141,7 @@ export default function UserEdit() {
         <div className="max-w-5xl mx-auto space-y-6">
             <div className="flex items-center gap-4">
                 <button
-                    onClick={() => navigate('/admin/users')}
+                    onClick={() => navigate(-1)}
                     className="p-2 hover:bg-bg-hover rounded-lg transition-colors"
                 >
                     <ArrowLeft className="h-5 w-5 text-text-secondary" />

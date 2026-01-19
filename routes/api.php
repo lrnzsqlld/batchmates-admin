@@ -116,7 +116,7 @@ Route::prefix('v1')->group(function () {
             Route::apiResource('users', UserController::class);
 
             // Committee bank accounts
-            Route::prefix('committee-bank-accounts')->group(function () {
+            Route::prefix('committee-bank-accounts')->middleware('role:system_admin|institution_admin')->group(function () {
                 Route::get('/', [CommitteeBankAccountController::class, 'index']);
                 Route::post('/', [CommitteeBankAccountController::class, 'store']);
                 Route::get('/{id}', [CommitteeBankAccountController::class, 'show']);

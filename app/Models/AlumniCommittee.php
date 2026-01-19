@@ -17,8 +17,6 @@ class AlumniCommittee extends Model
         'start_date',
         'end_date',
         'status',
-        'approval_threshold',
-        'approval_type',
     ];
 
     protected $casts = [

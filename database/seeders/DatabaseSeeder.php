@@ -105,8 +105,6 @@ class DatabaseSeeder extends Seeder
             'description' => 'ADNU Alumni Committee',
             'start_date' => now()->toDateString(),
             'status' => 'active',
-            'approval_threshold' => 100,
-            'approval_type' => 'unanimous',
         ]);
 
         $ustCommittee = AlumniCommittee::create([
@@ -115,8 +113,6 @@ class DatabaseSeeder extends Seeder
             'description' => 'UST Alumni Committee',
             'start_date' => now()->toDateString(),
             'status' => 'active',
-            'approval_threshold' => 100,
-            'approval_type' => 'unanimous',
         ]);
 
         $dlsuCommittee = AlumniCommittee::create([
@@ -125,8 +121,6 @@ class DatabaseSeeder extends Seeder
             'description' => 'DLSU Alumni Committee',
             'start_date' => now()->toDateString(),
             'status' => 'active',
-            'approval_threshold' => 100,
-            'approval_type' => 'unanimous',
         ]);
 
         $adnuCommitteeMember = CommitteeMember::create([
